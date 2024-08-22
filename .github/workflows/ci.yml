@@ -1,7 +1,12 @@
-name: CI
+name: Create tmkms Release
 
 on:
-  pull_request: {}
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create release from'
+        required: false
+        default: v0.14.0
 
 env:
   CARGO_INCREMENTAL: 0
@@ -86,6 +91,27 @@ jobs:
       - run: cargo build --features=yubihsm-server --release
       - run: cargo build --features=ledger --release
       - run: cargo build --features=yubihsm-server,ledger,softsign --release
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ inputs.tag }}
+          release_name: Release ${{ inputs.tag }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/tmkms
+          asset_name: tmkms
+          asset_content_type: application/octet-stream
 
   test:
     name: Test Suite
