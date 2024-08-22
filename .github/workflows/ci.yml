@@ -86,10 +86,10 @@ jobs:
       - name: Install libudev-dev
         run: sudo apt-get update && sudo apt-get install libudev-dev
 
-      - run: cargo build --no-default-features --features softsign --release
-      - run: cargo build --features=yubihsm --release
-      - run: cargo build --features=yubihsm-server --release
-      - run: cargo build --features=ledger --release
+      # - run: cargo build --no-default-features --features softsign --release
+      # - run: cargo build --features=yubihsm --release
+      # - run: cargo build --features=yubihsm-server --release
+      # - run: cargo build --features=ledger --release
       - run: cargo build --features=yubihsm-server,ledger,softsign --release
 
       - name: Create GitHub Release
@@ -109,8 +109,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/tmkms
-          asset_name: tmkms
+          asset_path: /home/runner/work/tendermint-tmkms
+          asset_name: tendermint-tmkms
           asset_content_type: application/octet-stream
 
   test:
